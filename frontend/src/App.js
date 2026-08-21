@@ -60,7 +60,8 @@ const AppContent = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // On every app load, silently call /me to restore session from httpOnly cookie.
+    // On every app load, silently call /me with the stored JWT token (Authorization header)
+    // to restore the user session into Redux state.
     dispatch(fetchCurrentUserAsync());
   }, [dispatch]);
 

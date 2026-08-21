@@ -44,16 +44,18 @@ export const logoutAsync = createAsyncThunk(
   }
 );
 
-// Restore session from httpOnly cookie (replaces localStorage approach)
-// Called once on app mount — if the JWT cookie is valid, the server returns the user.
+// Restore session using JWT token from localStorage (sent via Authorization header)
+// Called once on app mount — if the token is valid, the server returns the user.
 export const fetchCurrentUserAsync = createAsyncThunk(
   "users/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
       return await userService.getMe();
-    } catch {
-      // Cookie missing or expired — not an error, just no session
-      return rejectWithValue(null);
+    } catch (error) {
+      // Pass the HTTP status so the rejected handler can distinguish auth errors
+      // from transient network failures
+      const status = error?.response?.status ?? null;
+      return rejectWithValue(status);
     }
   }
 );
@@ -140,12 +142,18 @@ const usersSlice = createSlice({
         localStorage.removeItem("token");
       }
     });
-    builder.addCase(fetchCurrentUserAsync.rejected, (state) => {
-      // No valid session — clear everything
-      state.signedUser = null;
-      state.isSignIn = false;
+    builder.addCase(fetchCurrentUserAsync.rejected, (state, action) => {
+      // Only wipe the token if the server explicitly rejected it (401 Unauthorized).
+      // For network errors or server timeouts (null status), keep the token so the
+      // user isn't silently logged out due to a transient failure on first load.
+      const httpStatus = action.payload;
+      if (httpStatus === 401 || httpStatus === 403) {
+        state.signedUser = null;
+        state.isSignIn = false;
+        localStorage.removeItem("token");
+      }
+      // Always mark session as restored so the app can continue rendering
       state.sessionRestored = true;
-      localStorage.removeItem("token");
     });
 
     // Update profile

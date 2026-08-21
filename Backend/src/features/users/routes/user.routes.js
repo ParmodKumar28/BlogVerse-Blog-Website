@@ -17,7 +17,7 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 
-// Session restore — called on app load to hydrate Redux from JWT cookie
+// Session restore — called on app load to hydrate Redux using JWT token from Authorization header
 router.get("/me", verifyToken, getCurrentUser);
 
 // Profile update — supports optional file upload for profile picture

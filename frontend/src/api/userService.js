@@ -16,7 +16,7 @@ const userService = {
     return response.data;
   },
 
-  // Restore session from httpOnly cookie — called on app load
+  // Restore session using JWT token from Authorization header — called on app load
   getMe: async () => {
     const response = await axiosClient.get("/user/me");
     return response.data;
