@@ -28,7 +28,7 @@ const Home = () => {
   const secondaryBlogs = filteredBlogs.length > 1 ? filteredBlogs.slice(1) : (selectedCategory !== "All" ? filteredBlogs : []);
 
   return (
-    <div className="min-h-screen bg-zinc-50/50 pb-20">
+    <div className="min-h-dvh bg-zinc-50/50 pb-20">
       {/* Editorial Header Section */}
       <section className="border-b border-zinc-200 bg-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">

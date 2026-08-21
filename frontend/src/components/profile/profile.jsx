@@ -104,7 +104,7 @@ const Profile = () => {
 
 
   return (
-    <div className="min-h-screen px-4 py-10 pb-20 bg-zinc-50/50 sm:px-6 lg:px-8">
+    <div className="min-h-dvh px-4 py-10 pb-20 bg-zinc-50/50 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Author Profile Header Card */}
         <AuthorProfileCard

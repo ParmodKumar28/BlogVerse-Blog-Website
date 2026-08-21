@@ -97,7 +97,7 @@ const PostForm = () => {
   };
 
   return (
-    <div className="min-h-screen px-4 py-6 bg-white sm:px-6 lg:px-8">
+    <div className="min-h-dvh px-4 py-6 bg-white sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-6">
 
         {/* Sticky Control Header */}

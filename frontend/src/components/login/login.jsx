@@ -24,7 +24,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-zinc-50/50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[calc(100dvh-4rem)] bg-zinc-50/50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white p-8 sm:p-10 rounded-2xl border border-zinc-200 shadow-xs space-y-6">
         <div className="text-center space-y-1">
           <div className="inline-flex w-9 h-9 rounded-lg bg-zinc-900 text-white items-center justify-center text-xs font-bold mb-2">

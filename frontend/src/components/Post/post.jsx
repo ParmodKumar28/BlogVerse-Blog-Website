@@ -59,7 +59,7 @@ const BlogDetail = () => {
   const isOwner = isSignIn && currentUserId && blogUserId && (blogUserId.toString() === currentUserId.toString() || blog.user?.username === signedUser?.username);
 
   return (
-    <div className="min-h-screen bg-white py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-dvh bg-white py-10 px-4 sm:px-6 lg:px-8">
       <main className="max-w-3xl mx-auto space-y-8">
         
         {/* Navigation & Actions Header */}
