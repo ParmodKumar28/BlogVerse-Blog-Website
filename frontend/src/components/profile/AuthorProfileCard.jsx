@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, BookOpen, PenSquare, Camera, Loader2 } from 'lucide-react';
 

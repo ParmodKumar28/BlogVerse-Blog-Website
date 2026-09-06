@@ -1,4 +1,3 @@
-import React from "react";
 import {
   CATEGORY_IMAGE_CATALOG,
   FORM_CATEGORIES as CATEGORIES,

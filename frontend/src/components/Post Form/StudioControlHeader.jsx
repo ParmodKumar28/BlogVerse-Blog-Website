@@ -1,4 +1,3 @@
-import React from 'react';
 import { Send, Sparkles, Edit3 } from 'lucide-react';
 
 const StudioControlHeader = ({

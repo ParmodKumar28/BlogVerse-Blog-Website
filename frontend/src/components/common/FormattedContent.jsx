@@ -1,5 +1,3 @@
-import React from 'react';
-
 const FormattedContent = ({ content, className = '' }) => {
   if (!content) return null;
 
