@@ -5,13 +5,12 @@ import "./dotenv.js";
 // Imports
 import express from "express";
 import path from "path";
-import { fileURLToPath } from "url";
 import { ErrorHandlerMiddleware } from "./middlewares/errorHandlerMiddleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import helmet from "helmet"; // Added for security headers
-import morgan from "morgan"; // Added for request logging
-import rateLimit from "express-rate-limit"; // Added for basic rate limiting
+import helmet from "helmet";
+import morgan from "morgan";
+import rateLimit from "express-rate-limit";
 
 // Routers imports
 import userRouter from "../src/features/users/routes/user.routes.js";
@@ -19,10 +18,6 @@ import blogRouter from "../src/features/blogs/routes/blog.routes.js";
 
 // Creating server
 const app = express();
-
-// // Resolve __dirname in ES module context
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
 
 // Setting up cors
 const allowedOrigins = [
@@ -102,7 +97,7 @@ app.use("/api/user", userRouter);
 app.use("/api/blog", blogRouter);
 
 // Handling invalid routes
-app.use((req, res) => {
+app.use((res) => {
   res.status(404).json({
     success: false,
     error: "Invalid api! Enter valid api here please",

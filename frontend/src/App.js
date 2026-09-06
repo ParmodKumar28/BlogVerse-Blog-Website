@@ -62,7 +62,8 @@ const AppContent = () => {
   useEffect(() => {
     // On every app load, silently call /me with the stored JWT token (Authorization header)
     // to restore the user session into Redux state.
-    dispatch(fetchCurrentUserAsync());
+    const token = localStorage.getItem("token");
+    if (token) dispatch(fetchCurrentUserAsync());
   }, [dispatch]);
 
   return <RouterProvider router={router} />;
