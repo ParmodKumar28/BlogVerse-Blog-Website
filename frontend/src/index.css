@@ -110,3 +110,140 @@ table {
   width: 100%;
   overflow-x: auto;
 }
+
+/* ProRichTextEditor Canvas Styles */
+.editor-canvas[data-empty="true"]::before {
+  content: attr(data-placeholder);
+  color: #a1a1aa;
+  pointer-events: none;
+  font-style: italic;
+  display: block;
+  height: 0;
+}
+
+.editor-canvas:focus {
+  outline: none;
+}
+
+/* Rich Text Typography for Editor Canvas and Formatted Blog View */
+.editor-canvas h1,
+.prose h1 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+  margin-top: 1.75rem !important;
+  margin-bottom: 0.75rem !important;
+  color: #18181b !important;
+}
+
+.editor-canvas h2,
+.prose h2 {
+  font-size: 1.75rem !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #18181b !important;
+}
+
+.editor-canvas h3,
+.prose h3 {
+  font-size: 1.35rem !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  margin-top: 1.25rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #27272a !important;
+}
+
+.editor-canvas p,
+.prose p {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.75rem !important;
+  line-height: 1.75 !important;
+}
+
+.editor-canvas ul,
+.prose ul {
+  list-style-type: disc !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+  padding-left: 2rem !important;
+}
+
+.editor-canvas ol,
+.prose ol {
+  list-style-type: decimal !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+  padding-left: 2rem !important;
+}
+
+.editor-canvas li,
+.prose li {
+  display: list-item !important;
+  list-style: inherit !important;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
+  padding-left: 0.35rem !important;
+  line-height: 1.6 !important;
+}
+
+.editor-canvas blockquote,
+.prose blockquote {
+  border-left: 4px solid #18181b !important;
+  padding: 0.5rem 1rem !important;
+  font-style: italic !important;
+  color: #3f3f46 !important;
+  background-color: #f9fafb !important;
+  border-radius: 0 0.5rem 0.5rem 0 !important;
+  margin: 1.25rem 0 !important;
+}
+
+.editor-canvas pre,
+.prose pre {
+  background-color: #18181b !important;
+  color: #f4f4f5 !important;
+  padding: 0.875rem 1.25rem !important;
+  border-radius: 0.5rem !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 0.875rem !important;
+  overflow-x: auto !important;
+  margin: 1.25rem 0 !important;
+}
+
+.editor-canvas code,
+.prose code {
+  background-color: #f4f4f5 !important;
+  color: #09090b !important;
+  padding: 0.15rem 0.35rem !important;
+  border-radius: 0.25rem !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 0.875em !important;
+  border: 1px solid #e4e4e7 !important;
+}
+
+.editor-canvas pre code,
+.prose pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: inherit !important;
+}
+
+.editor-canvas a,
+.prose a {
+  color: #2563eb !important;
+  text-decoration: underline !important;
+  font-weight: 500 !important;
+}
+
+.editor-canvas hr,
+.prose hr {
+  border: none !important;
+  border-top: 2px dashed #d4d4d8 !important;
+  margin: 1.75rem 0 !important;
+}
+
+

@@ -182,3 +182,32 @@ export const CATEGORY_COVERS = {
   Lifestyle: CATEGORY_IMAGE_CATALOG.Lifestyle[2].url,
   General: CATEGORY_IMAGE_CATALOG.General[0].url,
 };
+
+export const EDITOR_PRESET_IMAGES = [
+  {
+    label: "💻 Code Setup",
+    url: CATEGORY_IMAGE_CATALOG.Tutorials[0].url,
+    alt: "Developer code setup on monitor",
+  },
+  {
+    label: "🚀 Workspace",
+    url: CATEGORY_IMAGE_CATALOG.Lifestyle[0].url,
+    alt: "Clean workspace desk with laptop",
+  },
+  {
+    label: "⚡ AI & Future",
+    url: CATEGORY_IMAGE_CATALOG.Design[3].url,
+    alt: "Abstract digital futuristic 3D render",
+  },
+  {
+    label: "🎨 UI Design",
+    url: CATEGORY_IMAGE_CATALOG.Design[0].url,
+    alt: "Modern UI design workspace",
+  },
+  {
+    label: "🌿 Architecture",
+    url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+    alt: "Minimalist modern glass architecture",
+  },
+];
+
