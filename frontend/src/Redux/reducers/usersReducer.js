@@ -44,13 +44,13 @@ export const logoutAsync = createAsyncThunk(
   }
 );
 
-// Restore session using JWT token from localStorage (sent via Authorization header)
-// Called once on app mount — if the token is valid, the server returns the user.
+// Restore session from the httpOnly refresh cookie (also mints a fresh access cookie)
+// Called once on app mount — if the cookie is valid, the server returns the user.
 export const fetchCurrentUserAsync = createAsyncThunk(
   "users/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
-      return await userService.getMe();
+      return await userService.refresh();
     } catch (error) {
       // Pass the HTTP status so the rejected handler can distinguish auth errors
       // from transient network failures
@@ -74,15 +74,15 @@ export const updateProfileAsync = createAsyncThunk(
   }
 );
 
-// Initial State — restores token and isSignIn flag from localStorage
+// Initial State — auth now lives in httpOnly cookies, so we start signed-out
+// and let the session-restore call (on app mount) decide the real state.
 const INITIAL_STATE = {
-  isSignIn: Boolean(localStorage.getItem("token")),
-  token: localStorage.getItem("token") || "",
-  signedUser: null,   // null = unknown, {} = confirmed logged out
+  isSignIn: false,
+  signedUser: null,   // null = unknown, object = confirmed user
   signUpLoading: false,
   loginLoading: false,
   profileLoading: false,
-  sessionRestored: false, // true once /me call completes (success or failure)
+  sessionRestored: false, // true once the refresh/me call completes (success or failure)
 };
 
 const usersSlice = createSlice({
@@ -103,15 +103,13 @@ const usersSlice = createSlice({
     builder.addCase(loginAsync.pending, (state) => { state.loginLoading = true; });
     builder.addCase(loginAsync.fulfilled, (state, action) => {
       state.loginLoading = false;
-      if (action.payload && action.payload.token) {
-        state.token = action.payload.token;
+      if (action.payload && action.payload.user) {
+        // Server set the httpOnly auth cookies; we only keep the user in memory
         state.signedUser = action.payload.user;
         state.isSignIn = true;
         state.sessionRestored = true;
-        localStorage.setItem("token", action.payload.token);
         toast.success("Login Successful!");
       } else {
-        state.token = "";
         state.signedUser = null;
         state.isSignIn = false;
         toast.error("Invalid response from server. Please check your API URL configuration.");
@@ -122,35 +120,29 @@ const usersSlice = createSlice({
     // Logout
     builder.addCase(logoutAsync.fulfilled, (state) => {
       state.isSignIn = false;
-      state.token = "";
       state.signedUser = null;
       state.sessionRestored = true;
-      localStorage.removeItem("token");
       toast.success("Logged out successfully!");
     });
 
-    // Restore session via /me — called silently on app mount
+    // Restore session via refresh cookie — called silently on app mount
     builder.addCase(fetchCurrentUserAsync.fulfilled, (state, action) => {
       if (action.payload && action.payload.user) {
         state.signedUser = action.payload.user;
         state.isSignIn = true;
-        state.sessionRestored = true;
       } else {
         state.signedUser = null;
         state.isSignIn = false;
-        state.sessionRestored = true;
-        localStorage.removeItem("token");
       }
+      state.sessionRestored = true;
     });
     builder.addCase(fetchCurrentUserAsync.rejected, (state, action) => {
-      // Only wipe the token if the server explicitly rejected it (401 Unauthorized).
-      // For network errors or server timeouts (null status), keep the token so the
-      // user isn't silently logged out due to a transient failure on first load.
+      // Only treat as signed-out if the server explicitly rejected it (401/403).
+      // For network errors/timeouts (null status), leave state untouched.
       const httpStatus = action.payload;
       if (httpStatus === 401 || httpStatus === 403) {
         state.signedUser = null;
         state.isSignIn = false;
-        localStorage.removeItem("token");
       }
       // Always mark session as restored so the app can continue rendering
       state.sessionRestored = true;
