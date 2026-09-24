@@ -11,6 +11,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import mongoSanitize from "express-mongo-sanitize";
 
 // Routers imports
 import userRouter from "../src/features/users/routes/user.routes.js";
@@ -18,6 +19,8 @@ import blogRouter from "../src/features/blogs/routes/blog.routes.js";
 
 // Creating server
 const app = express();
+
+app.set("trust proxy", 1);
 
 // Setting up cors
 const allowedOrigins = [
@@ -50,7 +53,7 @@ app.use(
 // Security headers middleware (helps prevent common attacks like XSS, clickjacking, etc.)
 app.use(
   helmet({
-    crossOriginResourcepolicy: { policy: "cross-origin" },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
   }),
 );
 
@@ -80,12 +83,14 @@ app.use(
   }),
 );
 
+// Body parsing
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.json({ limit: "16kb" }));
+
+app.use(mongoSanitize());
+
 // Cookie parser
 app.use(cookieParser());
-
-// Body parsing
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
 // Default route
 app.get("/", (req, res) => {
@@ -97,7 +102,7 @@ app.use("/api/user", userRouter);
 app.use("/api/blog", blogRouter);
 
 // Handling invalid routes
-app.use((res) => {
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     error: "Invalid api! Enter valid api here please",
