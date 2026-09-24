@@ -1,3 +1,15 @@
+import DOMPurify from "dompurify";
+
+const PURIFY_CONFIG = {
+  ALLOWED_TAGS: [
+    "h1", "h2", "h3", "h4", "h5", "h6", "p", "br", "hr", "div", "span",
+    "strong", "b", "em", "i", "u", "s", "strike", "sub", "sup",
+    "blockquote", "pre", "code", "ul", "ol", "li", "a", "img",
+  ],
+  ALLOWED_ATTR: ["href", "target", "rel", "src", "alt", "title", "width", "height", "class", "style"],
+  ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
+};
+
 const FormattedContent = ({ content, className = '' }) => {
   if (!content) return null;
 
@@ -8,7 +20,7 @@ const FormattedContent = ({ content, className = '' }) => {
     return (
       <div
         className={`prose prose-zinc max-w-none font-serif-editorial text-zinc-800 leading-relaxed space-y-4 ${className}`}
-        dangerouslySetInnerHTML={{ __html: content }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content, PURIFY_CONFIG) }}
       />
     );
   }
