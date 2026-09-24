@@ -9,12 +9,13 @@ import {
 } from "../controller/user.controller.js";
 import verifyToken from "../../../middlewares/auth.js";
 import upload from "../../../middlewares/multer.middleware.js";
+import { authLimiter } from "../../../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
 // Auth routes
-router.post("/register", registerUser);
-router.post("/login", loginUser);
+router.post("/register", authLimiter, registerUser);
+router.post("/login", authLimiter, loginUser);
 router.post("/logout", logoutUser);
 
 // Session restore — called on app load to hydrate Redux using JWT token from Authorization header

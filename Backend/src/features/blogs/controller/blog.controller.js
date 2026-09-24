@@ -1,5 +1,6 @@
 // Blog controller to communicate with routes and repository
 import ErrorHandler from "../../../utils/ErrorHandler.js";
+import { sanitizeRichText, stripHtml } from "../../../utils/sanitize.util.js";
 import {
   createBlog,
   deleteBlog,
@@ -21,9 +22,9 @@ export const createNewBlog = async (req, res, next) => {
     }
 
     const newBlog = await createBlog({
-      title,
-      subtitle: subtitle || "",
-      content,
+      title: stripHtml(title),
+      subtitle: stripHtml(subtitle || ""),
+      content: sanitizeRichText(content),
       imageUrl: imageUrl || "",
       category: category || "General",
       readTime: readTime || "2 min read",
@@ -34,7 +35,7 @@ export const createNewBlog = async (req, res, next) => {
       .status(201)
       .json({ message: "Blog created successfully", blog: newBlog });
   } catch (error) {
-    return next(new ErrorHandler(500, error));
+    return next(new ErrorHandler(500, "Something went wrong while creating the blog"));
   }
 };
 
@@ -44,7 +45,7 @@ export const getAllBlogsHandler = async (req, res, next) => {
     const blogs = await getAllBlogs();
     res.json(blogs);
   } catch (error) {
-    return next(new ErrorHandler(500, error));
+    return next(new ErrorHandler(500, "Something went wrong while fetching blogs"));
   }
 };
 
@@ -60,7 +61,7 @@ export const getBlogByIdHandler = async (req, res, next) => {
 
     res.json(blog);
   } catch (error) {
-    return next(new ErrorHandler(500, error));
+    return next(new ErrorHandler(500, "Something went wrong while fetching the blog"));
   }
 };
 
@@ -89,9 +90,9 @@ export const updateBlogHandler = async (req, res, next) => {
 
     // Update blog with validated fields
     const updatedBlog = await updateBlog(blogId, {
-      title,
-      subtitle: subtitle || "",
-      content,
+      title: stripHtml(title),
+      subtitle: stripHtml(subtitle || ""),
+      content: sanitizeRichText(content),
       imageUrl: imageUrl || "",
       category: category || "General",
       readTime: readTime || "2 min read",
@@ -99,7 +100,7 @@ export const updateBlogHandler = async (req, res, next) => {
 
     res.json({ message: "Blog updated successfully", blog: updatedBlog });
   } catch (error) {
-    return next(new ErrorHandler(500, error));
+    return next(new ErrorHandler(500, "Something went wrong while updating the blog"));
   }
 };
 

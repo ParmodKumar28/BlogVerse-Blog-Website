@@ -20,7 +20,9 @@ const verifyToken = async (req, res, next) => {
 
   try {
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      algorithms: ["HS256"],
+    });
 
     // Retrieve user from the database using the decoded user ID
     const user = await User.findById(decoded.userId); // Assuming userId is the field in the token
