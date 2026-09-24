@@ -5,6 +5,7 @@ import {
   loginUser,
   logoutUser,
   getCurrentUser,
+  refreshSession,
   updateProfile,
 } from "../controller/user.controller.js";
 import verifyToken from "../../../middlewares/auth.js";
@@ -17,8 +18,9 @@ const router = express.Router();
 router.post("/register", authLimiter, registerUser);
 router.post("/login", authLimiter, loginUser);
 router.post("/logout", logoutUser);
+router.post("/refresh", refreshSession);
 
-// Session restore — called on app load to hydrate Redux using JWT token from Authorization header
+// Session restore — called on app load to hydrate Redux from the httpOnly cookie
 router.get("/me", verifyToken, getCurrentUser);
 
 // Profile update — supports optional file upload for profile picture

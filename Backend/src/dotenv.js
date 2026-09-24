@@ -2,7 +2,11 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const requiredEnvVars = ["JWT_SECRET", "DB_URL"];
+const requiredEnvVars = [
+  "DB_URL",
+  "ACCESS_TOKEN_SECRET",
+  "REFRESH_TOKEN_SECRET",
+];
 
 const missing = requiredEnvVars.filter((key) => !process.env[key]);
 if (missing.length > 0) {
@@ -12,8 +16,14 @@ if (missing.length > 0) {
   );
 }
 
-if (process.env.JWT_SECRET.length < 16) {
-  throw new Error(
-    "JWT_SECRET is too short. Use a long, random secret (32+ characters recommended)."
-  );
+for (const key of ["ACCESS_TOKEN_SECRET", "REFRESH_TOKEN_SECRET"]) {
+  if (process.env[key].length < 32) {
+    throw new Error(
+      `${key} is too short. Use a long, random secret (32+ characters recommended).`
+    );
+  }
+}
+
+if (process.env.ACCESS_TOKEN_SECRET === process.env.REFRESH_TOKEN_SECRET) {
+  throw new Error("ACCESS_TOKEN_SECRET and REFRESH_TOKEN_SECRET must differ.");
 }

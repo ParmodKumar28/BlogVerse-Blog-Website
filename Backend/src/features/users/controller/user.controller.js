@@ -1,13 +1,21 @@
 // User controller — handles auth and profile management
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import {
   createUser,
   findUserByEmail,
   getUserById,
   updateUserProfile,
+  revokeUserSessions,
 } from "../model/user.repository.js";
 import ErrorHandler from "../../../utils/ErrorHandler.js";
+import {
+  setAuthCookies,
+  clearAuthCookies,
+  verifyAccessToken,
+  verifyRefreshToken,
+  ACCESS_COOKIE,
+  REFRESH_COOKIE,
+} from "../../../utils/token.util.js";
 
 // Shared helper: strips sensitive fields from a user document
 const sanitizeUser = (user) => ({
@@ -78,18 +86,15 @@ export const loginUser = async (req, res, next) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return next(new ErrorHandler(401, "Invalid credentials"));
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      algorithm: "HS256",
-      expiresIn: "7d",
-    });
+    setAuthCookies(res, user);
 
-    res.json({ message: "Login successful", token, user: sanitizeUser(user) });
+    res.json({ message: "Login successful", user: sanitizeUser(user) });
   } catch (error) {
     return passError(next, error, "Something went wrong while logging in");
   }
 };
 
-// GET /api/user/me  — restore session from authorization header
+// GET /api/user/me  — return current user from verified access-token cookie
 export const getCurrentUser = async (req, res, next) => {
   try {
     // req.user is already attached by verifyToken middleware
@@ -99,6 +104,36 @@ export const getCurrentUser = async (req, res, next) => {
     res.json({ user: sanitizeUser(user) });
   } catch (error) {
     return passError(next, error, "Something went wrong while fetching your profile");
+  }
+};
+
+// POST /api/user/refresh — mint a fresh access token from the refresh cookie
+export const refreshSession = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies?.[REFRESH_COOKIE];
+    if (!refreshToken) {
+      return next(new ErrorHandler(401, "No refresh token provided"));
+    }
+
+    let decoded;
+    try {
+      decoded = verifyRefreshToken(refreshToken);
+    } catch {
+      clearAuthCookies(res);
+      return next(new ErrorHandler(401, "Invalid refresh token"));
+    }
+
+    const user = await getUserById(decoded.userId);
+    if (!user || user.tokenVersion !== decoded.tokenVersion) {
+      clearAuthCookies(res);
+      return next(new ErrorHandler(401, "Session expired. Please log in again"));
+    }
+
+    // Rotate both tokens so a leaked refresh cookie has a short lifespan
+    setAuthCookies(res, user);
+    res.json({ user: sanitizeUser(user) });
+  } catch (error) {
+    return passError(next, error, "Something went wrong while refreshing session");
   }
 };
 
@@ -132,11 +167,31 @@ export const updateProfile = async (req, res, next) => {
   }
 };
 
-// POST /api/user/logout
+// POST /api/user/logout — revoke all tokens for the user and clear cookies
 export const logoutUser = async (req, res, next) => {
   try {
+    const accessToken = req.cookies?.[ACCESS_COOKIE];
+    const refreshToken = req.cookies?.[REFRESH_COOKIE];
+
+    // Best-effort: resolve the user from whichever token is still valid and
+    // bump their tokenVersion so all outstanding access/refresh tokens die.
+    let userId = null;
+    try {
+      if (accessToken) userId = verifyAccessToken(accessToken).userId;
+    } catch {
+      /* access token expired/invalid — fall through to refresh token */
+    }
+    try {
+      if (!userId && refreshToken) userId = verifyRefreshToken(refreshToken).userId;
+    } catch {
+      /* refresh token invalid — nothing to revoke */
+    }
+
+    if (userId) await revokeUserSessions(userId);
+
+    clearAuthCookies(res);
     res.json({ message: "Logout successful" });
   } catch (error) {
-    return next(new ErrorHandler(500, error));
+    return passError(next, error, "Something went wrong while logging out");
   }
 };

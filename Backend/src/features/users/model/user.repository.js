@@ -38,3 +38,12 @@ export const updateUserProfile = async (id, updateData) => {
     throw new ErrorHandler(400, "Error updating user profile");
   }
 };
+
+// Increment token version — invalidates all previously issued access/refresh tokens
+export const revokeUserSessions = async (id) => {
+  try {
+    return await User.findByIdAndUpdate(id, { $inc: { tokenVersion: 1 } }, { new: true });
+  } catch (error) {
+    throw new ErrorHandler(500, "Error revoking sessions");
+  }
+};
